@@ -5,12 +5,30 @@ import React, { useState, useEffect } from 'react';
 import quizData from '/Users/sarthakjha/Uni/projects/quizapp/Quiz-Website/src/quiz.json';
 
 const Quiz = () => {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedOption, setSelectedOption] = useState('');
-  const [score, setScore] = useState(0);
-  const [showScore, setShowScore] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(600); // 600 seconds = 10 minutes
-  const [timerExpired, setTimerExpired] = useState(false);
+  // Initialize state variables with localStorage values or default values
+  const initialCurrentQuestion = parseInt(localStorage.getItem('currentQuestion')) || 0;
+  const initialSelectedOption = localStorage.getItem('selectedOption') || '';
+  const initialScore = parseInt(localStorage.getItem('score')) || 0;
+  const initialShowScore = localStorage.getItem('showScore') === 'true' || false;
+  const initialTimeLeft = parseInt(localStorage.getItem('timeLeft')) || 600; // 600 seconds = 10 minutes
+  const initialTimerExpired = localStorage.getItem('timerExpired') === 'true' || false;
+
+  const [currentQuestion, setCurrentQuestion] = useState(initialCurrentQuestion);
+  const [selectedOption, setSelectedOption] = useState(initialSelectedOption);
+  const [score, setScore] = useState(initialScore);
+  const [showScore, setShowScore] = useState(initialShowScore);
+  const [timeLeft, setTimeLeft] = useState(initialTimeLeft);
+  const [timerExpired, setTimerExpired] = useState(initialTimerExpired);
+
+  // Update localStorage whenever state variables change
+  useEffect(() => {
+    localStorage.setItem('currentQuestion', currentQuestion.toString());
+    localStorage.setItem('selectedOption', selectedOption);
+    localStorage.setItem('score', score.toString());
+    localStorage.setItem('showScore', showScore.toString());
+    localStorage.setItem('timeLeft', timeLeft.toString());
+    localStorage.setItem('timerExpired', timerExpired.toString());
+  }, [currentQuestion, selectedOption, score, showScore, timeLeft, timerExpired]);
 
   // Function to handle timer countdown
   useEffect(() => {
