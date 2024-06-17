@@ -5,20 +5,50 @@ import React, { useState, useEffect } from 'react';
 import quizData from '/Users/sarthakjha/Uni/projects/quizapp/Quiz-Website/src/quiz.json';
 
 const Quiz = () => {
-  // Initialize state variables with localStorage values or default values
-  const initialCurrentQuestion = parseInt(localStorage.getItem('currentQuestion')) || 0;
-  const initialSelectedOption = localStorage.getItem('selectedOption') || '';
-  const initialScore = parseInt(localStorage.getItem('score')) || 0;
-  const initialShowScore = localStorage.getItem('showScore') === 'true' || false;
-  const initialTimeLeft = parseInt(localStorage.getItem('timeLeft')) || 600; // 600 seconds = 10 minutes
-  const initialTimerExpired = localStorage.getItem('timerExpired') === 'true' || false;
+  const [currentQuestion, setCurrentQuestion] = useState(
+    parseInt(localStorage.getItem('currentQuestion')) || 0
+  );
+  const [selectedOption, setSelectedOption] = useState(
+    localStorage.getItem('selectedOption') || ''
+  );
+  const [score, setScore] = useState(parseInt(localStorage.getItem('score')) || 0);
+  const [showScore, setShowScore] = useState(
+    localStorage.getItem('showScore') === 'true' || false
+  );
+  const [timeLeft, setTimeLeft] = useState(parseInt(localStorage.getItem('timeLeft')) || 600); // 600 seconds = 10 minutes
+  const [timerExpired, setTimerExpired] = useState(
+    localStorage.getItem('timerExpired') === 'true' || false
+  );
+  const [isFullScreen, setIsFullScreen] = useState(
+    localStorage.getItem('isFullScreen') === 'true' || false
+  );
 
-  const [currentQuestion, setCurrentQuestion] = useState(initialCurrentQuestion);
-  const [selectedOption, setSelectedOption] = useState(initialSelectedOption);
-  const [score, setScore] = useState(initialScore);
-  const [showScore, setShowScore] = useState(initialShowScore);
-  const [timeLeft, setTimeLeft] = useState(initialTimeLeft);
-  const [timerExpired, setTimerExpired] = useState(initialTimerExpired);
+  // Initialize full-screen mode
+  useEffect(() => {
+    const handleFullScreenChange = () => {
+      setIsFullScreen(document.fullscreenElement !== null);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullScreenChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullScreenChange);
+    };
+  }, []);
+
+  // Request full-screen mode
+  const requestFullScreen = () => {
+    const element = document.documentElement;
+    if (element.requestFullscreen) {
+      element.requestFullscreen();
+    } else if (element.mozRequestFullScreen) { /* Firefox */
+      element.mozRequestFullScreen();
+    } else if (element.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+      element.webkitRequestFullscreen();
+    } else if (element.msRequestFullscreen) { /* IE/Edge */
+      element.msRequestFullscreen();
+    }
+  };
 
   // Update localStorage whenever state variables change
   useEffect(() => {
@@ -28,7 +58,8 @@ const Quiz = () => {
     localStorage.setItem('showScore', showScore.toString());
     localStorage.setItem('timeLeft', timeLeft.toString());
     localStorage.setItem('timerExpired', timerExpired.toString());
-  }, [currentQuestion, selectedOption, score, showScore, timeLeft, timerExpired]);
+    localStorage.setItem('isFullScreen', isFullScreen.toString());
+  }, [currentQuestion, selectedOption, score, showScore, timeLeft, timerExpired, isFullScreen]);
 
   // Function to handle timer countdown
   useEffect(() => {
@@ -74,6 +105,7 @@ const Quiz = () => {
     setShowScore(false);
     setTimeLeft(600); // Reset timer to 10 minutes
     setTimerExpired(false); // Reset timer expired state
+    requestFullScreen(); // Request full-screen again on restart
   };
 
   // Format time left into minutes and seconds
@@ -85,37 +117,45 @@ const Quiz = () => {
 
   return (
     <div>
-      <div>
-        <h2>Time Left: {formatTime()}</h2>
-      </div>
-      {showScore ? (
-        <div>
-          <h1>Your Score: {score} / {quizData.quiz.length}</h1>
-        </div>
-      ) : (
-        <div>
-          <h1>{quizData.quiz[currentQuestion].question}</h1>
-          <div>
-            {quizData.quiz[currentQuestion].options.map((option, index) => (
-              <div key={index}>
-                <input
-                  type="radio"
-                  id={`option-${index}`}
-                  name="quiz-option"
-                  value={option}
-                  checked={selectedOption === option}
-                  onChange={handleOptionChange}
-                />
-                <label htmlFor={`option-${index}`}>{option}</label>
-              </div>
-            ))}
-          </div>
-          <button onClick={handleNextQuestion} disabled={!selectedOption}>
-            Next
-          </button>
+      {!isFullScreen && (
+        <div className="fullscreen-popup">
+          <p>Please enter full-screen mode to take the quiz.</p>
+          <button onClick={requestFullScreen}>Enter Full-Screen</button>
         </div>
       )}
-      <button onClick={handleRestartQuiz}>Restart Quiz</button>
+      <div className={isFullScreen ? '' : 'hidden'}>
+        <div>
+          <h2>Time Left: {formatTime()}</h2>
+        </div>
+        {showScore ? (
+          <div>
+            <h1>Your Score: {score} / {quizData.quiz.length}</h1>
+          </div>
+        ) : (
+          <div>
+            <h1>{quizData.quiz[currentQuestion].question}</h1>
+            <div>
+              {quizData.quiz[currentQuestion].options.map((option, index) => (
+                <div key={index}>
+                  <input
+                    type="radio"
+                    id={`option-${index}`}
+                    name="quiz-option"
+                    value={option}
+                    checked={selectedOption === option}
+                    onChange={handleOptionChange}
+                  />
+                  <label htmlFor={`option-${index}`}>{option}</label>
+                </div>
+              ))}
+            </div>
+            <button onClick={handleNextQuestion} disabled={!selectedOption}>
+              Next
+            </button>
+          </div>
+        )}
+        <button onClick={handleRestartQuiz}>Restart Quiz</button>
+      </div>
     </div>
   );
 };
