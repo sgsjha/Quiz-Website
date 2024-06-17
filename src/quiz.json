@@ -1,0 +1,55 @@
+{
+    "quiz": [
+      {
+        "question": "What is the capital of Australia?",
+        "options": ["Sydney", "Melbourne", "Canberra", "Perth"],
+        "answer": "Canberra"
+      },
+      {
+        "question": "What is the capital of Brazil?",
+        "options": ["Rio de Janeiro", "Brasília", "São Paulo", "Salvador"],
+        "answer": "Brasília"
+      },
+      {
+        "question": "What is the capital of Canada?",
+        "options": ["Toronto", "Vancouver", "Ottawa", "Montreal"],
+        "answer": "Ottawa"
+      },
+      {
+        "question": "What is the capital of China?",
+        "options": ["Shanghai", "Beijing", "Hong Kong", "Guangzhou"],
+        "answer": "Beijing"
+      },
+      {
+        "question": "What is the capital of Egypt?",
+        "options": ["Alexandria", "Cairo", "Giza", "Luxor"],
+        "answer": "Cairo"
+      },
+      {
+        "question": "What is the capital of Germany?",
+        "options": ["Munich", "Berlin", "Frankfurt", "Hamburg"],
+        "answer": "Berlin"
+      },
+      {
+        "question": "What is the capital of India?",
+        "options": ["Mumbai", "New Delhi", "Bangalore", "Chennai"],
+        "answer": "New Delhi"
+      },
+      {
+        "question": "What is the capital of Japan?",
+        "options": ["Osaka", "Kyoto", "Tokyo", "Nagoya"],
+        "answer": "Tokyo"
+      },
+      {
+        "question": "What is the capital of Russia?",
+        "options": ["Saint Petersburg", "Moscow", "Novosibirsk", "Yekaterinburg"],
+        "answer": "Moscow"
+      },
+      {
+        "question": "What is the capital of South Korea?",
+        "options": ["Busan", "Incheon", "Seoul", "Daegu"],
+        "answer": "Seoul"
+      }
+    ]
+  }
+  
