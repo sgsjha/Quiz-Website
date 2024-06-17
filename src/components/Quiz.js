@@ -1,4 +1,6 @@
 // src/Quiz.js
+//import quizData from '/Users/sarthakjha/Uni/projects/quizapp/Quiz-Website/src/quiz.json';
+
 import React, { useState, useEffect } from 'react';
 import quizData from '/Users/sarthakjha/Uni/projects/quizapp/Quiz-Website/src/quiz.json';
 
@@ -8,29 +10,27 @@ const Quiz = () => {
   const [score, setScore] = useState(0);
   const [showScore, setShowScore] = useState(false);
   const [timeLeft, setTimeLeft] = useState(600); // 600 seconds = 10 minutes
+  const [timerExpired, setTimerExpired] = useState(false);
 
-   // Function to handle timer countdown
-   useEffect(() => {
-    if (timeLeft === 0) {
-      // Time's up, show score
-      setShowScore(true);
-    } else {
-      // Decrease time left every second
-      const timer = setTimeout(() => {
-        setTimeLeft(timeLeft - 1);
+  // Function to handle timer countdown
+  useEffect(() => {
+    let timer = null;
+    if (!timerExpired) {
+      timer = setTimeout(() => {
+        setTimeLeft((prevTime) => {
+          if (prevTime === 0) {
+            setTimerExpired(true);
+            setShowScore(true);
+            return prevTime;
+          }
+          return prevTime - 1;
+        });
       }, 1000);
-      // Clear timeout on component unmount or when timeLeft changes to 0
-      return () => clearTimeout(timer);
     }
-  }, [timeLeft]);
+    // Clear timeout on component unmount or when timer expires
+    return () => clearTimeout(timer);
+  }, [timeLeft, timerExpired]);
 
-  // Format time left into minutes and seconds
-  const formatTime = () => {
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
-    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-  };
-  
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
   };
@@ -45,6 +45,7 @@ const Quiz = () => {
       setCurrentQuestion(nextQuestion);
     } else {
       setShowScore(true);
+      setTimerExpired(true); // Stop the timer when quiz is completed
     }
   };
 
@@ -54,6 +55,14 @@ const Quiz = () => {
     setScore(0);
     setShowScore(false);
     setTimeLeft(600); // Reset timer to 10 minutes
+    setTimerExpired(false); // Reset timer expired state
+  };
+
+  // Format time left into minutes and seconds
+  const formatTime = () => {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
   return (
@@ -64,7 +73,6 @@ const Quiz = () => {
       {showScore ? (
         <div>
           <h1>Your Score: {score} / {quizData.quiz.length}</h1>
-      
         </div>
       ) : (
         <div>
